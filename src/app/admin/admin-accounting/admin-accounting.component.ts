@@ -17,7 +17,7 @@ import autoTable from 'jspdf-autotable';
 export class AdminAccountingComponent implements OnInit {
   accountingRecords: Income[] = [];
   activeRecords: Income[] = [];
-  sentRecords: Income[] = []; // Registros que ya han sido enviados
+  sentRecords: Income[] = []; // Registros que ya han sido enviado
   filteredSentRecords: Income[] = [];
   users: User[] = [];
   totalAmount: number = 0;
