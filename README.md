@@ -35,10 +35,4 @@ SonarCloud se integra en nuestro flujo de trabajo para proporcionar análisis co
 - **Análisis de Calidad**: SonarCloud analiza automáticamente el código en busca de errores, vulnerabilidades y problemas de mantenibilidad cada vez que se realiza un commit o una fusión.
 - **Cobertura de Código**: Mide la cobertura de las pruebas para identificar áreas del código que necesitan más atención.
 
-## Contribuciones
 
-Los desarrolladores que contribuyen a este proyecto deben seguir las pautas de Trunk-Based Development, asegurándose de mantener las ramas cortas y los commits frecuentes. Además, todos los cambios deben pasar por el análisis de SonarCloud antes de fusionarse al trunk.
-
-## Licencia
-
-Este proyecto está bajo la Licencia MIT. Consulte el archivo LICENSE para obtener más detalles.
