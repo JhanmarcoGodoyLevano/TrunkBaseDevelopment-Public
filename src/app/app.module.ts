@@ -27,6 +27,8 @@ import { UserPanelComponent } from './user/user-panel/user-panel.component';
 import { UserBodyComponent } from './user/user-body/user-body.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from 'src/environments/environments';
+import { UserIncomeComponent } from './user/user-income/user-income.component';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -52,6 +54,8 @@ import { environment } from 'src/environments/environments';
     NavbarComponent,
     UserPanelComponent,
     UserBodyComponent,
+    UserIncomeComponent,
+    
   ],
   imports: [
     BrowserModule,
@@ -59,6 +63,7 @@ import { environment } from 'src/environments/environments';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxPaginationModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
   ],
   providers: [],

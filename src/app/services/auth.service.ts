@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
-import firebase from 'firebase/compat/app';
+import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces/user.interface';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = "https://vg-ms-user-production.up.railway.app/api/users";
   user$: Observable<User | null>;
 
-  constructor(private afAuth: AngularFireAuth, private firestore: AngularFirestore, private router: Router) {
+  constructor(private afAuth: AngularFireAuth, private http: HttpClient, private router: Router) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user) {
-          return this.firestore.doc<User>(`users/${user.uid}`).valueChanges().pipe(
-            map(userData => userData || null)
-          );
+          return this.getUserByUid(user.uid);
         } else {
           return of(null);
         }
@@ -27,92 +27,83 @@ export class AuthService {
     );
   }
 
-  async register(firstName: string, lastName: string, email: string, password: string, role: string ) {
-    const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
-      return this.firestore.doc(`users/${credential.user?.uid}`).set({
-      uid: credential.user?.uid,
-      lastName: lastName,
-      firstName: firstName,
-      email: email,
-      role: role
-    });
+  async register(firstName: string, lastName: string, email: string, password: string, role: string , phoneNumber: string) {
+    const userPayload = { firstName, lastName, email, password, role , phoneNumber };
+  
+    await this.http.post(`${this.apiUrl}/register`, userPayload).toPromise();
   }
-
+  
   async login(email: string, password: string) {
-    const credential = await this.afAuth.signInWithEmailAndPassword(email, password);
-    const userDoc = await this.firestore.doc<User>(`users/${credential.user?.uid}`).get().toPromise();
-    const userData = userDoc?.data() as User;
-
-    if (userData) {
-      switch (userData.role) {
-        case 'admin':
-          this.router.navigateByUrl('/admin/panel');
-          break;
-        case 'user':
-          this.router.navigateByUrl('/user/panel');
-          break;
-        default:
-          this.router.navigate(['/']);
-          break;
+    try {
+      await this.afAuth.signInWithEmailAndPassword(email, password);
+      const user = await this.afAuth.currentUser;
+      if (user) {
+        const userDoc = await this.getUserByUid(user.uid).toPromise();
+        
+        if (userDoc) {
+          switch (userDoc.role) {
+            case 'admin':
+              this.router.navigateByUrl('/admin/panel');
+              break;
+            case 'user':
+              this.router.navigateByUrl('/user/panel');
+              break;
+            default:
+              this.router.navigate(['/']);
+              break;
+          }
+        }
       }
+    } catch (error) {
+      console.error('Login failed', error);
     }
   }
 
-
-getUserRole(): Observable<string | null> {
-  return this.user$.pipe(
-    map(user => (user ? user.role : null))
-  );
-}
-
-getUserName(): Observable<string | null> {
-  return this.user$.pipe(
-    map(user => (user ? `${user.firstName} ${user.lastName}` : null))
-  );
-}
-
-async googleSignIn() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  const credential = await this.afAuth.signInWithPopup(provider);
-  const userRef = this.firestore.doc(`users/${credential.user?.uid}`);
-  const userDoc = await userRef.get().toPromise();
-
-  if (userDoc && !userDoc.exists) {
-    await userRef.set({
-      uid: credential.user?.uid,
-      email: credential.user?.email,
-      role: 'user'
-    } as User);
+  getUserRole(): Observable<string | null> {
+    return this.user$.pipe(
+      map(user => (user ? user.role : null))
+    );
   }
 
-  this.router.navigateByUrl('/user/panel');
-}
+  getUserName(): Observable<string | null> {
+    return this.user$.pipe(
+      map(user => (user ? `${user.firstName} ${user.lastName}` : null))
+    );
+  }
+
+  async googleSignIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      const credential = await this.afAuth.signInWithPopup(provider);
+      const user = credential.user;
+      
+      if (user) {
+        this.http.get<User>(`${this.apiUrl}/uid/${user.uid}`).subscribe(userDoc => {
+          if (!userDoc) {
+            this.http.post(`${this.apiUrl}/register`, {
+              uid: user.uid,
+              email: user.email,
+              role: 'user'
+            }).subscribe();
+          }
+          this.router.navigateByUrl('/user/panel');
+        });
+      }
+    } catch (error) {
+      console.error('Google sign-in failed', error);
+    }
+  }
 
   async logout() {
     await this.afAuth.signOut();
     return this.router.navigate(['/login']);
   }
 
-  sendVerificationCode(email: string, password: string): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
-        await credential.user?.sendEmailVerification();
-        console.log(`Código de verificación enviado a ${email}`);
-        resolve();
-      } catch (error) {
-        console.error(`Error enviando código de verificación a ${email}`, error);
-        reject(error);
-      }
-    });
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}`);
   }
 
-  verifyCode(email: string, code: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      console.log(`Verificando código ${code} para ${email}`);
-      resolve();
-    });
+  private getUserByUid(uid: string): Observable<User | null> {
+    return this.http.get<User>(`${this.apiUrl}/uid/${uid}`);
   }
-
-
 }
