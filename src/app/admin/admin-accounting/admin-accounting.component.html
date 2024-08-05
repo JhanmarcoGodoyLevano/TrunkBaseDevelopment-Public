@@ -1,1 +1,281 @@
-<p>accounting works!</p>
+<h2 class="text-lg font-semibold text-gray-700">Listado de Ingresos</h2>
+
+<div class="flex justify-between items-center mb-4">
+  <div class="text-sm font-medium text-gray-600">
+    Cantidad total: S/ {{ totalAmount | number:'1.2-2' }}
+  </div>
+  <div class="flex space-x-4">
+    <button (click)="openExportModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+      Exportar <i class="fa-solid fa-download"></i>
+    </button>
+    <button (click)="openSentRecordsModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      Ver Registros Enviados <i class="fa-solid fa-envelope-circle-check"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Modal para Exportaciones -->
+<div *ngIf="isExportModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg max-w-md w-full overflow-hidden">
+    <div class="flex justify-between items-center bg-gray-100 py-4 px-6 rounded-t-lg">
+      <h2 class="text-lg font-semibold">Exportar Datos</h2>
+      <button (click)="closeExportModal()" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex justify-around">
+        <img src="assets/icon-pdf.png" alt="Exportar a PDF" (click)="exportToPDF()" class="cursor-pointer w-16 h-16 hover:opacity-80">
+        <img src="assets/icon-excel.png" alt="Exportar a Excel" (click)="exportToExcel()" class="cursor-pointer w-16 h-16 hover:opacity-80">
+        <img src="assets/icon-csv.png" alt="Exportar a CSV" (click)="exportToCSV()" class="cursor-pointer w-16 h-16 hover:opacity-80">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="search-container mb-4">
+  <i class="fas fa-search search-icon"></i>
+  <input type="text" [(ngModel)]="tableSearchTerm" placeholder="Buscar en la tabla" class="search-input">
+</div>
+
+<!-- Tabla de registros -->
+<table class="min-w-full bg-white border border-gray-200 mt-4">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conceptos</th>
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montos</th>
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado de Pago</th>
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+      <th class="py-2 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado de Envío</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngIf="filteredTableRecords.length > 0">
+      <tr *ngFor="let record of filteredTableRecords | paginate: { itemsPerPage: 10, currentPage: page }" class="hover:bg-gray-50">
+        <td class="py-2 px-4 border-b border-gray-200 whitespace-nowrap text-sm">
+          {{ getUserName(record.personId)?.firstName || '' }} {{ getUserName(record.personId)?.lastName || '' }}
+        </td>
+        <td class="py-2 px-4 border-b border-gray-200 text-sm">
+          <ul>
+            <li *ngFor="let category of record.categories">
+              {{ category.name }}
+            </li>
+          </ul>
+        </td>
+        <td class="py-2 px-4 border-b border-gray-200 text-sm">
+          <ul>
+            <li *ngFor="let category of record.categories">
+              S/ {{ category.amount | number:'1.2-2' }}
+            </li>
+            <li class="border-t mt-1 pt-1">
+              <strong>Total: S/ {{ getTotalForRecord(record) | number:'1.2-2' }}</strong>
+            </li>
+          </ul>
+        </td>
+        <td class="py-2 px-4 border-b border-gray-200 text-sm">
+          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      {{ record.type === 'I' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+            {{ record.type === 'I' ? 'Ingreso' : 'Egreso' }}
+          </span>
+        </td>
+        <td class="py-2 px-4 border-b border-gray-200 text-sm">
+          <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                      {{ record.statusPayment === 'P' ? 'bg-yellow-100 text-yellow-800' 
+                        : (record.statusPayment === 'R' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800') }}">
+            {{ record.statusPayment === 'P' ? 'Pendiente' : (record.statusPayment === 'R' ? 'Rechazado' : 'Aceptado') }}
+          </span>
+        </td>
+        <td class="py-2 px-4 border-b border-gray-200 text-sm">
+          <span class="flex space-x-2">
+            <a (click)="openDetailModal(record)" title="Ver detalle">
+              <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
+            </a>
+            <!-- Icono de enviar -->
+            <a (click)="openPaymentStatusModal(record)" title="Enviar">
+              <i class="fas fa-paper-plane text-green-600 hover:text-green-800"></i>
+            </a>
+          </span>
+        </td>
+        <!-- Estado de Envío -->
+        <td class="py-2 px-4 border-b border-gray-200 text-sm">
+          <span *ngIf="record.isLoading || record.isSent" class="flex items-center space-x-2">
+            <i *ngIf="record.isLoading" class="fas fa-circle-notch fa-spin text-gray-600"></i>
+            <i *ngIf="record.isSent" class="fas fa-check-circle text-green-600"></i>
+            <span>{{ record.statusMessage }}</span>
+          </span>
+        </td>
+        
+      </tr>
+    </ng-container>
+    <ng-container *ngIf="filteredTableRecords.length === 0">
+      <tr>
+        <td colspan="7" class="py-2 px-4 border-b border-gray-200 text-center text-gray-500 text-sm">No hay datos disponibles</td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
+
+<pagination-controls (pageChange)="page = $event" previousLabel="« Anterior" nextLabel="Siguiente »" class="mt-2"></pagination-controls>
+
+<!-- Modal para Registros Enviados -->
+<div *ngIf="isSentRecordsModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg max-w-5xl w-11/12 md:w-3/4 h-[90vh] overflow-hidden flex flex-col">
+    <!-- Título y cierre del modal -->
+    <div class="flex justify-between items-center bg-gray-100 py-4 px-6 rounded-t-lg">
+      <h2 class="text-lg font-semibold">Registros Enviados</h2>
+      <button (click)="closeSentRecordsModal()" class="text-gray-500 hover:text-gray-700">
+
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <!-- Filtros de búsqueda -->
+    <div class="p-4 bg-white flex-shrink-0"> <!-- Asegurado de que no se desplace con el contenido -->
+      <div class="flex flex-wrap justify-between items-center mb-4 space-y-2 md:space-y-0">
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applySentRecordsFilter()" placeholder="Buscar usuario" class="p-2 border border-gray-300 rounded w-full md:w-1/3">
+        <div class="flex items-center space-x-4">
+          <button (click)="openExportSentModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded ml-2">
+            Exportar Registros
+          </button>
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" [(ngModel)]="filterAccepted" (change)="applySentRecordsFilter()" class="form-checkbox">
+            <span>Aceptado</span>
+          </label>
+          <label class="flex items-center space-x-2">
+            <input type="checkbox" [(ngModel)]="filterRejected" (change)="applySentRecordsFilter()" class="form-checkbox">
+            <span>Rechazado</span>
+          </label>
+          <select [(ngModel)]="dateFilter" (change)="applySentRecordsFilter()" class="p-2 border border-gray-300 rounded">
+            <option value="">Todas las fechas</option>
+            <option value="today">Hoy</option>
+            <option value="week">Última semana</option>
+            <option value="month">Último mes</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- Contenedor desplazable para las tarjetas -->
+    <div class="p-4 space-y-4 overflow-y-auto flex-grow"> <!-- Asegurado el overflow-y-auto para el scroll -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2"> <!-- Reducción del gap -->
+        <div *ngFor="let record of filteredSentRecords" class="bg-gray-50 p-3 rounded-lg shadow-md h-48"> <!-- Ajustado el tamaño de las tarjetas y añadido altura fija -->
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-semibold text-xs">{{ getUserName(record.personId)?.firstName || '' }} {{ getUserName(record.personId)?.lastName || '' }}</p>
+              <p class="text-xs text-gray-500">{{ getUserName(record.personId)?.email || '' }}</p>
+            </div>
+            <button (click)="openDetailModal(record)" class="text-blue-600 hover:text-blue-800">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="mt-1 overflow-hidden"> <!-- Asegurar que el texto se mantenga dentro de la tarjeta -->
+            <ul class="text-xs">
+              <li *ngFor="let category of record.categories">
+                {{ category.name }} - S/ {{ category.amount | number:'1.2-2' }}
+              </li>
+            </ul>
+            <p class="mt-1 font-bold text-xs">Total: S/ {{ getTotalForRecord(record) | number:'1.2-2' }}</p>
+          </div>
+          <div class="mt-1"> <!-- Ajuste de espaciado -->
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {{ record.type === 'I' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+              {{ record.type === 'I' ? 'Ingreso' : 'Egreso' }}
+            </span>
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                        {{ record.statusPayment === 'R' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+              {{ record.statusPayment === 'R' ? 'Rechazado' : 'Aceptado' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Exportaciones de Registros Enviados -->
+<div *ngIf="isExportSentModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg max-w-md w-full overflow-hidden">
+    <div class="flex justify-between items-center bg-gray-100 py-4 px-6 rounded-t-lg">
+      <h2 class="text-lg font-semibold">Exportar Registros Enviados</h2>
+      <button (click)="closeExportSentModal()" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex justify-around">
+        <img src="assets/icon-pdf.png" alt="Exportar a PDF" (click)="exportSentToPDF()" class="cursor-pointer w-16 h-16 hover:opacity-80">
+        <img src="assets/icon-excel.png" alt="Exportar a Excel" (click)="exportSentToExcel()" class="cursor-pointer w-16 h-16 hover:opacity-80">
+        <img src="assets/icon-csv.png" alt="Exportar a CSV" (click)="exportSentToCSV()" class="cursor-pointer w-16 h-16 hover:opacity-80">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para Detalles -->
+<div *ngIf="isDetailModalOpen && selectedRecord" class="fixed inset-0 z-50 overflow-y-auto flex justify-center items-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg max-w-2xl w-full z-60"> <!-- Cambiado z-60 aquí -->
+    <div class="flex justify-between items-center bg-gray-100 py-4 px-6 rounded-t-lg">
+      <h2 class="text-lg font-semibold">Detalles del Ingreso</h2>
+      <button (click)="closeDetailModal()" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-4 flex">
+      <ng-container *ngIf="selectedRecord.fileUrls && selectedRecord.fileUrls.length > 0">
+        <img [src]="selectedRecord.fileUrls[0]" alt="Imagen de comprobante" class="w-1/3 h-auto rounded-lg mb-4 mr-4">
+      </ng-container>
+      
+      <div class="w-2/3">
+        <p><strong>Usuario:</strong> 
+          <ng-container *ngIf="selectedRecord.personId">
+            {{ getUserName(selectedRecord.personId)?.firstName || '' }} {{ getUserName(selectedRecord.personId)?.lastName || '' }}
+          </ng-container>
+        </p>
+        <p><strong>Correo:</strong> 
+          <ng-container *ngIf="selectedRecord.personId">
+            {{ getUserName(selectedRecord.personId)?.email || '' }}
+          </ng-container>
+        </p>
+        <p><strong>Fecha de Evento:</strong> {{ selectedRecord.dateEvent | date:'dd MMMM yyyy, h:mm a' }}</p>
+        <p><strong>Estado de Pago:</strong>
+          <span [ngClass]="{
+            'text-yellow-800': selectedRecord.statusPayment === 'P',
+            'text-red-800': selectedRecord.statusPayment === 'R',
+            'text-green-800': selectedRecord.statusPayment === 'A'
+          }">
+            {{ selectedRecord.statusPayment === 'P' ? 'Pendiente' : (selectedRecord.statusPayment === 'R' ? 'Rechazado' : 'Aceptado') }}
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Estado de Pago -->
+<div *ngIf="isPaymentStatusModalOpen" class="fixed inset-0 z-50 overflow-y-auto flex justify-center items-center bg-black bg-opacity-50">
+  <div class="bg-white rounded-lg max-w-md w-full">
+    <div class="flex justify-between items-center bg-gray-100 py-4 px-6 rounded-t-lg">
+      <h2 class="text-lg font-semibold">Estado de Pago</h2>
+      <button (click)="closePaymentStatusModal()" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <p><strong>Estado de Pago:</strong> 
+        <span [ngClass]="{
+          'text-yellow-800': selectedRecord?.statusPayment === 'P',
+          'text-red-800': selectedRecord?.statusPayment === 'R',
+          'text-green-800': selectedRecord?.statusPayment === 'A'
+        }">
+          {{ selectedRecord?.statusPayment === 'P' ? 'Pendiente' : (selectedRecord?.statusPayment === 'R' ? 'Rechazado' : 'Aceptado') }}
+        </span>
+      </p>
+      <textarea [(ngModel)]="comments" class="w-full p-2 border border-gray-300 rounded" rows="4" placeholder="Ingrese comentarios..."></textarea>
+      <div class="flex justify-end space-x-2">
+        <button (click)="acceptPayment()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Aceptar</button>
+        <button (click)="rejectPayment()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Rechazar</button>
+      </div>
+    </div>
+  </div>
+</div>
