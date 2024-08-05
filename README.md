@@ -1,27 +1,44 @@
-# VgWebDivinex
+# Proyecto Divinex
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.14.
+Este proyecto utiliza Trunk-Based Development (TBD) como metodología principal de desarrollo, asegurando un flujo de trabajo ágil y colaborativo que minimiza la complejidad de la integración y facilita la entrega continua.
 
-## Development server
+## Trunk-Based Development
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Trunk-Based Development es una estrategia de desarrollo de software que se centra en mantener una sola rama principal (trunk) en la que los desarrolladores integran su trabajo con frecuencia. Este enfoque fomenta una entrega continua y facilita la colaboración entre equipos.
 
-## Code scaffolding
+### Características Principales de TBD en este Proyecto
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- **Ramas de Vida Corta**: Las ramas se mantienen por períodos cortos y se fusionan rápidamente al trunk para minimizar la divergencia y los conflictos.
+- **Integración Continua**: Las integraciones frecuentes aseguran que el código esté siempre en un estado desplegable.
+- **Entrega Continua**: El código que está en el trunk está listo para ser desplegado en producción en cualquier momento.
 
-## Build
+## Estrategia de Ramas
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+En este repositorio, seguimos un esquema de ramas que incluye `feature`, `hotfix`, y el uso de SonarCloud para asegurar la calidad del código:
 
-## Running unit tests
+### Ramas `feature`
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- **Propósito**: Se utilizan para desarrollar nuevas funcionalidades de manera aislada.
+- **Duración**: Son de corta duración y se fusionan rápidamente al trunk (`main`) una vez que el desarrollo está completo y probado.
+- **Ejemplo de nombre**: `feature/nueva-funcionalidad`
 
-## Running end-to-end tests
+### Ramas `hotfix`
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- **Propósito**: Se utilizan para corregir errores críticos que afectan la producción.
+- **Duración**: Son temporales y se fusionan de vuelta al trunk (`main`) lo más rápido posible.
+- **Ejemplo de nombre**: `hotfix/correccion-error-importante`
 
-## Further help
+### Uso de SonarCloud
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+SonarCloud se integra en nuestro flujo de trabajo para proporcionar análisis continuo de la calidad del código, asegurando que el código sea limpio, seguro, y mantenible:
+
+- **Análisis de Calidad**: SonarCloud analiza automáticamente el código en busca de errores, vulnerabilidades y problemas de mantenibilidad cada vez que se realiza un commit o una fusión.
+- **Cobertura de Código**: Mide la cobertura de las pruebas para identificar áreas del código que necesitan más atención.
+
+## Contribuciones
+
+Los desarrolladores que contribuyen a este proyecto deben seguir las pautas de Trunk-Based Development, asegurándose de mantener las ramas cortas y los commits frecuentes. Además, todos los cambios deben pasar por el análisis de SonarCloud antes de fusionarse al trunk.
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulte el archivo LICENSE para obtener más detalles.
