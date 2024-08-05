@@ -13,6 +13,7 @@ export class RegisterComponent {
   role: string = 'user';
   firstName: string = '';
   lastName: string = '';
+  phoneNumber: string = '';
   constructor(private authService: AuthService, private router: Router) {}
 
   register() {
@@ -22,7 +23,8 @@ export class RegisterComponent {
         this.lastName,
         this.email,
         this.password,
-        this.role
+        this.role = 'user',
+        this.phoneNumber
       )
       .then(() => {
         this.router.navigate(['/']);

@@ -19,6 +19,7 @@ export class SidebarComponent implements OnInit {
   displayName: string = 'Usuario';
 
   constructor(private authService: AuthService) {}
+
   ngOnInit(): void {
     this.authService.getUserRole().subscribe((role) => {
       console.log('Rol del usuario:', role);
@@ -105,6 +106,41 @@ export class SidebarComponent implements OnInit {
       icon: 'fas fa-cog',
       route: '/admin/configuracion',
       expectedRole: ['admin'],
+    },
+    {
+      name: 'Inicio',
+      displayName: 'Inicio',
+      icon: 'fas fa-home',
+      route: '/user/panel',
+      expectedRole: ['user'],
+    },
+    {
+      name: 'Bautismo',
+      displayName: 'Bautismo',
+      icon: 'fas fa-child',
+      route: '/user/bautismo',
+      expectedRole: ['user'],
+    },
+    {
+      name: 'Comunión',
+      displayName: 'Comunión',
+      icon: 'fas fa-chalice',
+      route: '/user/comunion',
+      expectedRole: ['user'],
+    },
+    {
+      name: 'Matrimonio',
+      displayName: 'Matrimonio',
+      icon: 'fas fa-ring',
+      route: '/user/matrimonio',
+      expectedRole: ['user'],
+    },
+    {
+      name: 'Ingreso',
+      displayName: 'Income',
+      icon: 'fas fa-calculator',
+      route: '/user/income',
+      expectedRole: ['user'],
     },
   ];
 

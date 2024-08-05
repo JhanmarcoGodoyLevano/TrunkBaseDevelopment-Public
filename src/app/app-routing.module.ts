@@ -6,8 +6,6 @@ import { RegisterComponent } from './auth/register/register.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UserBaptismCreateComponent } from './user/user-baptism/baptism-create/user-baptism-create.component';
 import { UserCommunionCreateComponent } from './user/user-communion/communion-create/user-communion-create.component';
-import { UserConfirmationCreateComponent } from './user/user-confirmation/confirmation-create/user-confirmation-create.component';
-import { UserMarriageCreateComponent } from './user/user-marriage/marriage-create/user-marriage-create.component';
 import { UserBodyComponent } from './user/user-body/user-body.component';
 import { AdminBodyComponent } from './admin/admin-body/admin-body.component';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
@@ -18,6 +16,10 @@ import { AdminMarriageListComponent } from './admin/admin-marriage/marriage-list
 import { AdminAccountingComponent } from './admin/admin-accounting/admin-accounting.component';
 import { AdminModeratorComponent } from './admin/admin-moderator/admin-moderator.component';
 import { AdminSettingsComponent } from './admin/admin-settings/admin-settings.component';
+import { UserPanelComponent } from './user/user-panel/user-panel.component';
+import { UserMarriageCreateComponent } from './user/user-marriage/marriage-create/user-marriage-create.component';
+import { UserIncomeComponent } from './user/user-income/user-income.component';
+
 
 const routes: Routes = [
   {
@@ -38,35 +40,53 @@ const routes: Routes = [
     component: RegisterComponent,
   },
   {
-    path: 'bautismo/create',
-    component: UserBaptismCreateComponent,
-    canActivate: [AuthGuard],
-    data: { expectedRole: 'user' },
-  },
-  {
-    path: 'comunion/create',
-    component: UserCommunionCreateComponent,
-    canActivate: [AuthGuard],
-    data: { expectedRole: 'user' },
-  },
-  {
-    path: 'confirmacion/create',
-    component: UserConfirmationCreateComponent,
-    canActivate: [AuthGuard],
-    data: { expectedRole: 'user' },
-  },
-  {
-    path: 'matrimonio/create',
-    component: UserMarriageCreateComponent,
-    canActivate: [AuthGuard],
-    data: { expectedRole: 'user' },
-  },
-  {
-    path: 'user/panel',
+    path: 'user',
     component: UserBodyComponent,
     canActivate: [AuthGuard],
     data: { expectedRole: 'user' },
+    children: [
+      {
+        path: '',
+        redirectTo: 'panel',
+        pathMatch: 'full',
+      },
+      {
+        path: 'panel',
+        component: UserPanelComponent,
+        canActivate: [AuthGuard],
+        data: { expectedRole: 'user' }
+      },
+      {
+        path: 'bautismo',
+        component: UserBaptismCreateComponent,
+        canActivate: [AuthGuard],
+        data: { expectedRole: 'user' }
+      },
+      {
+        path: 'income',
+        component: UserIncomeComponent,
+        canActivate: [AuthGuard],
+        data: { expectedRole: 'user' }
+      },
+      {
+        path: 'comunion',
+        component: UserCommunionCreateComponent,
+        canActivate: [AuthGuard],
+        data: { expectedRole: 'user' }
+      },
+      {
+        path: 'matrimonio',
+        component: UserMarriageCreateComponent,
+        canActivate: [AuthGuard],
+        data: { expectedRole: 'user' }
+      },
+
+    ],
   },
+
+
+
+  
   {
     path: 'admin',
     component: AdminBodyComponent,
@@ -82,7 +102,7 @@ const routes: Routes = [
         path: 'panel',
         component: AdminPanelComponent,
         canActivate: [AuthGuard],
-        data: { expectedRole: 'admin' },
+        data: { expectedRole: 'admin' }
       },
       {
         path: 'constancia',
@@ -96,25 +116,25 @@ const routes: Routes = [
             path: 'bautismo',
             component: AdminBaptismListComponent,
             canActivate: [AuthGuard],
-            data: { expectedRole: 'admin' },
+            data: { expectedRole: 'admin' }
           },
           {
             path: 'comunion',
             component: AdminCommunionListComponent,
             canActivate: [AuthGuard],
-            data: { expectedRole: 'admin' },
+            data: { expectedRole: 'admin' }
           },
           {
             path: 'confirmacion',
             component: AdminConfirmationListComponent,
             canActivate: [AuthGuard],
-            data: { expectedRole: 'admin' },
+            data: { expectedRole: 'admin' }
           },
           {
             path: 'matrimonio',
             component: AdminMarriageListComponent,
             canActivate: [AuthGuard],
-            data: { expectedRole: 'admin' },
+            data: { expectedRole: 'admin' }
           },
         ],
       },
@@ -122,19 +142,19 @@ const routes: Routes = [
         path: 'contabilidad',
         component: AdminAccountingComponent,
         canActivate: [AuthGuard],
-        data: { expectedRole: 'admin' },
+        data: { expectedRole: 'admin' }
       },
       {
         path: 'moderador',
         component: AdminModeratorComponent,
         canActivate: [AuthGuard],
-        data: { expectedRole: 'admin' },
+        data: { expectedRole: 'admin' }
       },
       {
         path: 'configuracion',
         component: AdminSettingsComponent,
         canActivate: [AuthGuard],
-        data: { expectedRole: 'admin' },
+        data: { expectedRole: 'admin' }
       },
     ],
   },
