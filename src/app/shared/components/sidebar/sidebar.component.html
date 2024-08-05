@@ -1,0 +1,51 @@
+<div
+  [ngClass]="{ 'w-64': !isCollapsed, 'w-20': isCollapsed }"
+  class="bg-gray-800 h-full p-4 transition-width duration-300"
+>
+  <div class="flex items-center mb-6 rounded h-10">
+    <img
+      src="./assets/img/logo.png"
+      alt="Logo"
+      class="h-8 w-8 object-cover mx-2"
+    />
+    <div class="ml-2 flex flex-col justify-center">
+      <span *ngIf="!isCollapsed" class="text-white text-lg font-semibold"
+        >DIVINEX</span
+      >
+      <span *ngIf="!isCollapsed" class="text-white text-sm font-normal">{{
+        displayName
+      }}</span>
+    </div>
+  </div>
+  <hr class="border-gray-600 my-4" />
+  <div class="overflow-hidden py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+    <ul class="space-y-2 font-medium">
+      <li *ngFor="let item of menuItems">
+        <ng-container
+          *ngIf="
+            hasUserRole() && userRoleMatchesExpectedRole(item.expectedRole)
+          "
+        >
+          <a
+            [routerLink]="item.route"
+            (click)="selectMenuItem(item.name)"
+            [ngClass]="{
+              'bg-blue-700 text-white': selectedMenuItem === item.name,
+              'hover:bg-gray-100 dark:hover:bg-gray-700':
+                selectedMenuItem !== item.name,
+              'text-gray-900 dark:text-white': selectedMenuItem !== item.name
+            }"
+            class="flex items-center p-2 rounded-lg group"
+          >
+            <i
+              class="w-5 h-5 ms-2 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white {{
+                item.icon
+              }}"
+            ></i>
+            <span *ngIf="!isCollapsed" class="ms-5">{{ item.name }}</span>
+          </a>
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+</div>

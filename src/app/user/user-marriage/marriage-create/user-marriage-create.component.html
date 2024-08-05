@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitud de Matrimonio</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex items-center justify-center h-screen">
+      <div class="max-w-xl w-full p-6 bg-white shadow-md rounded-lg">
+        <h2 class="text-2xl font-semibold mb-6">Solicitud de Matrimonio</h2>
+        <form (ngSubmit)="onSubmit(marriageForm)" #marriageForm="ngForm">
+          <div class="mb-4 flex flex-wrap">
+            <div class="w-full sm:w-1/2 pr-2">
+              <label
+                for="namesContractor1"
+                class="block text-sm font-medium text-gray-700"
+                >Nombre(s) del 1er Prometido:</label
+              >
+              <input
+                type="text"
+                id="namesContractor1"
+                name="namesContractor1"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                [(ngModel)]="createMarriage.namesContractor1"
+                required
+                pattern="^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$"
+                #namesContractor1Input="ngModel"
+              />
+              <div
+                *ngIf="
+                  namesContractor1Input.errors &&
+                  (namesContractor1Input.dirty || namesContractor1Input.touched)
+                "
+              >
+                <p
+                  *ngIf="namesContractor1Input.errors['pattern']"
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Solo se permiten letras y espacios.
+                </p>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/2 pl-2">
+              <label
+                for="surnameContractor1"
+                class="block text-sm font-medium text-gray-700"
+                >Apellidos del 1er Prometido:</label
+              >
+              <input
+                type="text"
+                id="surnameContractor1"
+                name="surnameContractor1"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                [(ngModel)]="createMarriage.surnameContractor1"
+                required
+                pattern="^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$"
+                #surnameContractor1Input="ngModel"
+              />
+              <div
+                *ngIf="
+                  surnameContractor1Input.errors &&
+                  (surnameContractor1Input.dirty ||
+                    surnameContractor1Input.touched)
+                "
+              >
+                <p
+                  *ngIf="surnameContractor1Input.errors['pattern']"
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Solo se permiten letras y espacios.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4 flex flex-wrap">
+            <div class="w-full sm:w-1/2 pr-2">
+              <label
+                for="namesContractor2"
+                class="block text-sm font-medium text-gray-700"
+                >Nombre(s) del 2do Prometido:</label
+              >
+              <input
+                type="text"
+                id="namesContractor2"
+                name="namesContractor2"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                [(ngModel)]="createMarriage.namesContractor2"
+                required
+                pattern="^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$"
+                #namesContractor2Input="ngModel"
+              />
+              <div
+                *ngIf="
+                  namesContractor2Input.errors &&
+                  (namesContractor2Input.dirty || namesContractor2Input.touched)
+                "
+              >
+                <p
+                  *ngIf="namesContractor2Input.errors['pattern']"
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Solo se permiten letras y espacios.
+                </p>
+              </div>
+            </div>
+            <div class="w-full sm:w-1/2 pl-2">
+              <label
+                for="surnamesContractor2"
+                class="block text-sm font-medium text-gray-700"
+                >Apellidos del 2do Prometido:</label
+              >
+              <input
+                type="text"
+                id="surnamesContractor2"
+                name="surnamesContractor2"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                [(ngModel)]="createMarriage.surnamesContractor2"
+                required
+                pattern="^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$"
+                #surnamesContractor2Input="ngModel"
+              />
+              <div
+                *ngIf="
+                  surnamesContractor2Input.errors &&
+                  (surnamesContractor2Input.dirty ||
+                    surnamesContractor2Input.touched)
+                "
+              >
+                <p
+                  *ngIf="surnamesContractor2Input.errors['pattern']"
+                  class="text-red-500 text-xs mt-1"
+                >
+                  Solo se permiten letras y espacios.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button
+              type="submit"
+              class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

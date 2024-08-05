@@ -1,0 +1,99 @@
+<div class="flex items-center justify-center h-screen">
+  <div class="max-w-xl w-full p-6 bg-white shadow-md rounded-lg">
+    <h2 class="text-2xl font-semibold mb-6">Crear Confirmación</h2>
+    <form (ngSubmit)="onSubmit(confirmationForm)" #confirmationForm="ngForm">
+      <div class="mb-4">
+        <label for="names" class="block text-sm font-medium text-gray-700"
+          >Nombres</label
+        >
+        <input
+          type="text"
+          id="names"
+          name="names"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createConfirmation.names"
+          #names="ngModel"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+          required
+        />
+        <div
+          *ngIf="names.invalid && (names.dirty || names.touched)"
+          class="text-red-600 text-sm"
+        >
+          <div *ngIf="names.errors?.['required']">
+            El campo nombres es obligatorio.
+          </div>
+          <div *ngIf="names.errors?.['pattern']">
+            Solo se permiten letras y espacios.
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label for="lastName" class="block text-sm font-medium text-gray-700"
+          >Apellidos</label
+        >
+        <input
+          type="text"
+          id="lastName"
+          name="lastName"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createConfirmation.lastName"
+          #lastName="ngModel"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"
+          required
+        />
+        <div
+          *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)"
+          class="text-red-600 text-sm"
+        >
+          <div *ngIf="lastName.errors?.['required']">
+            El campo apellidos es obligatorio.
+          </div>
+          <div *ngIf="lastName.errors?.['pattern']">
+            Solo se permiten letras y espacios.
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label for="birthDate" class="block text-sm font-medium text-gray-700"
+          >Fecha de Nacimiento</label
+        >
+        <input
+          type="date"
+          id="birthDate"
+          name="birthDate"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createConfirmation.birthDate"
+          #birthDate="ngModel"
+          required
+          (input)="validateDate(birthDate)"
+          (focus)="hideInvalidYears()"
+          (blur)="checkBirthDateRequired(birthDate)"
+        />
+        <div
+          *ngIf="birthDate.invalid && (birthDate.dirty || birthDate.touched)"
+          class="text-red-600 text-sm"
+        >
+          <div *ngIf="birthDate.errors?.['required']">
+            El campo fecha de nacimiento es obligatorio.
+          </div>
+          <div *ngIf="birthDate.errors?.['pastDate']">
+            La fecha de nacimiento no puede ser anterior a 1900.
+          </div>
+          <div *ngIf="birthDate.errors?.['futureDate']">
+            La fecha de nacimiento no puede ser en el futuro.
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          [disabled]="confirmationForm.form.invalid"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

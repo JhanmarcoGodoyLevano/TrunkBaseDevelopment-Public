@@ -1,0 +1,132 @@
+<div class="flex items-center justify-center h-screen">
+  <div class="max-w-xl w-full p-6 bg-white shadow-md rounded-lg">
+    <h2 class="text-2xl font-semibold mb-6">Crear Comunión</h2>
+    <form (ngSubmit)="onSubmit(communionForm)" #communionForm="ngForm">
+      <div class="mb-4">
+        <label for="names" class="block text-sm font-medium text-gray-700"
+          >Nombres</label
+        >
+        <input
+          type="text"
+          id="names"
+          name="names"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createCommunion.names"
+          required
+          pattern="^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$"
+          #namesInput="ngModel"
+        />
+        <div
+          *ngIf="namesInput.errors && (namesInput.dirty || namesInput.touched)"
+        >
+          <p
+            *ngIf="namesInput.errors['pattern']"
+            class="text-red-500 text-xs mt-1"
+          >
+            Solo se permiten letras y espacios.
+          </p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label for="surnames" class="block text-sm font-medium text-gray-700"
+          >Apellidos</label
+        >
+        <input
+          type="text"
+          id="surnames"
+          name="surnames"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createCommunion.surnames"
+          required
+          pattern="^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$"
+          #surnamesInput="ngModel"
+        />
+        <div
+          *ngIf="
+            surnamesInput.errors &&
+            (surnamesInput.dirty || surnamesInput.touched)
+          "
+        >
+          <p
+            *ngIf="surnamesInput.errors['pattern']"
+            class="text-red-500 text-xs mt-1"
+          >
+            Solo se permiten letras y espacios.
+          </p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label
+          for="placeCommunion"
+          class="block text-sm font-medium text-gray-700"
+          >Lugar de Comunión</label
+        >
+        <input
+          type="text"
+          id="placeCommunion"
+          name="placeCommunion"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createCommunion.placeCommunion"
+          required
+          pattern="^[\wÀ-ÿ\u00f1\u00d1\s\W]+$"
+          #placeCommunionInput="ngModel"
+        />
+        <div
+          *ngIf="
+            placeCommunionInput.errors &&
+            (placeCommunionInput.dirty || placeCommunionInput.touched)
+          "
+        >
+          <p
+            *ngIf="placeCommunionInput.errors['pattern']"
+            class="text-red-500 text-xs mt-1"
+          >
+            Establecer el lugar de comunión
+          </p>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label
+          for="enrolledCatechesis"
+          class="block text-sm font-medium text-gray-700"
+        >
+          ¿Está inscrito en catequesis?
+        </label>
+        <select
+          id="enrolledCatechesis"
+          name="enrolledCatechesis"
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          [(ngModel)]="createCommunion.enrolledCatechesis"
+          pattern="^[\wÀ-ÿ\u00f1\u00d1\s\W]+$"
+          required
+          #enrolledCatechesisInput="ngModel"
+        >
+          <option value="" disabled selected>Selecciona...</option>
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
+        <div
+          *ngIf="
+            enrolledCatechesisInput.errors &&
+            (enrolledCatechesisInput.dirty || enrolledCatechesisInput.touched)
+          "
+        >
+          <p
+            *ngIf="enrolledCatechesisInput.errors['pattern']"
+            class="text-red-500 text-xs mt-1"
+          >
+            Es necesario saber si participa en la catequesis.
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
